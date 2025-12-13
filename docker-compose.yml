@@ -1,0 +1,47 @@
+services:
+  trtllm:
+    image: ${TRTLLM_IMAGE}
+    container_name: trtllm_llm_server
+    runtime: nvidia
+    ipc: host
+    network_mode: host
+    environment:
+    - HF_TOKEN=${HF_TOKEN}
+    - MODEL_HANDLE=${MODEL_HANDLE}
+    - HOST=${HOST}
+    - PORT=${PORT}
+    # Optional proxies if set in .env
+    - HTTPS_PROXY=${HTTPS_PROXY}
+    - HTTP_PROXY=${HTTP_PROXY}
+    - NO_PROXY=${NO_PROXY}
+    volumes:
+    # Persist HF downloads on the host for faster restarts
+    - ${HF_CACHE_DIR}:/root/.cache/huggingface
+    # Extra config mounted read-only
+    - ./config/extra-llm-api-config.yml:/etc/trtllm/extra-llm-api-config.yml:ro
+    command: >
+      bash -lc '
+        set -euo pipefail
+
+        echo "[trtllm] MODEL_HANDLE=$$MODEL_HANDLE"
+        echo "[trtllm] Binding on $${HOST}:$${PORT}"
+        echo "[trtllm] HF cache: /root/.cache/huggingface"
+
+        # Tokenizer encoding files used by OpenAI tokenizer families (kept local in container)
+        export TIKTOKEN_ENCODINGS_BASE="/tmp/harmony-reqs"
+        mkdir -p "$$TIKTOKEN_ENCODINGS_BASE"
+        wget -q -P "$$TIKTOKEN_ENCODINGS_BASE" https://openaipublic.blob.core.windows.net/encodings/o200k_base.tiktoken
+        wget -q -P "$$TIKTOKEN_ENCODINGS_BASE" https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken
+
+        # Download model weights into HF cache (no-op if already cached)
+        hf download "$$MODEL_HANDLE"
+
+        # Start server
+        trtllm-serve "$$MODEL_HANDLE" \
+          --trust_remote_code \
+          --host "$$HOST" \
+          --port "$$PORT" \
+          --max_batch_size 64 \
+          --extra_llm_api_options /etc/trtllm/extra-llm-api-config.yml
+      '
+    restart: unless-stopped

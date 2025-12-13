@@ -1,0 +1,12 @@
+# Extra TensorRT-LLM server config. Conservative defaults for stability on single device.
+print_iter_log: false
+
+kv_cache_config:
+  dtype: "auto"
+  free_gpu_memory_fraction: 0.90
+
+cuda_graph_config:
+  enable_padding: true
+
+# Stability-first setting; flip if you want max throughput later.
+disable_overlap_scheduler: true
