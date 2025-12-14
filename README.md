@@ -50,10 +50,28 @@ Note: if you bind `HOST=0.0.0.0`, local health/smoke tests will still connect vi
 Find your Spark’s LAN IP (e.g. `192.168.1.50`) and call:
 
 ```bash
+curl http://192.168.1.50:8355/health
 curl http://192.168.1.50:8355/v1/models
 ```
 
 More examples: see `docs/API.md`.
+
+## Start on boot (auto-start)
+
+The container uses `restart: unless-stopped`, so once the Docker Compose stack has been created, it will come back after a reboot when Docker starts.
+
+To make it explicit (and to ensure the stack is created on boot), install the provided systemd unit:
+
+```bash
+sudo bash scripts/install_autostart.sh
+```
+
+After that, you can reboot and verify:
+
+```bash
+systemctl status dgx-spark-gpt-oss-120b.service
+curl http://<DGX_IP>:8355/health
+```
 
 ## Notes
 

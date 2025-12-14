@@ -36,8 +36,26 @@ services:
         wget -q -P "$$TIKTOKEN_ENCODINGS_BASE" https://openaipublic.blob.core.windows.net/encodings/o200k_base.tiktoken
         wget -q -P "$$TIKTOKEN_ENCODINGS_BASE" https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken
 
-        # Download model weights into HF cache (no-op if already cached)
-        hf download "$$MODEL_HANDLE"
+        # Download only what trtllm-serve needs into HF cache (no-op if already cached)
+        # This avoids pulling large optional artifacts like `original/*` and `metal/model.bin`.
+        hf download "$$MODEL_HANDLE" \
+          --include \
+            "model-*.safetensors" \
+            "model.safetensors.index.json" \
+            "config.json" \
+            "generation_config.json" \
+            "tokenizer.json" \
+            "tokenizer_config.json" \
+            "special_tokens_map.json" \
+            "chat_template.jinja" \
+            "README.md" \
+            "LICENSE" \
+            "USAGE_POLICY" \
+            ".gitattributes"
+
+        # Force offline usage for serving so we do not stall on optional network fetches.
+        export HF_HUB_OFFLINE=1
+        export TRANSFORMERS_OFFLINE=1
 
         # Start server
         trtllm-serve "$$MODEL_HANDLE" \

@@ -123,12 +123,16 @@ bash scripts/test_chat.sh
 
 ```bash
 # on the DGX
-ip addr | grep -E "inet "
+ip -br -4 addr
+
+# or: show the IP used for outbound traffic (often the right LAN IP)
+ip route get 1.1.1.1 | sed -n '1p'
 ```
 
 1) From your laptop/desktop on the same LAN, replace `DGX_IP`:
 
 ```bash
+curl http://DGX_IP:8355/health
 curl -s http://DGX_IP:8355/v1/models
 ```
 
@@ -149,6 +153,20 @@ curl http://DGX_IP:8355/v1/chat/completions \
 ```bash
 make status
 make down
+```
+
+## 8b) Make it start automatically on boot
+
+This repo includes a `systemd` unit that runs `docker compose up -d` at boot.
+
+```bash
+sudo bash scripts/install_autostart.sh
+```
+
+Verify:
+
+```bash
+systemctl status dgx-spark-gpt-oss-120b.service
 ```
 
 ## 9) LAN exposure checklist (important)

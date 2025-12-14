@@ -6,7 +6,12 @@ ENV_FILE="$ROOT_DIR/.env"
 
 INTERVAL_SECONDS="${INTERVAL_SECONDS:-60}"
 CONTAINER_NAME="${CONTAINER_NAME:-trtllm_llm_server}"
-TOTAL_SHARDS="${TOTAL_SHARDS:-14}"
+EXIT_ON_PORT_UP="${EXIT_ON_PORT_UP:-0}"
+# The HF weight shards in this repo are named like: model-00000-of-00014.safetensors ... model-00014-of-00014.safetensors
+# That means the "of" value is a 0-indexed suffix, and the expected *count* is suffix+1.
+TOTAL_SHARDS_SUFFIX="${TOTAL_SHARDS_SUFFIX:-14}"
+TOTAL_SHARDS_PADDED="$(printf '%05d' "$TOTAL_SHARDS_SUFFIX")"
+TOTAL_SHARDS_COUNT=$((TOTAL_SHARDS_SUFFIX + 1))
 
 # Load .env if present (do not fail if missing)
 if [[ -f "$ENV_FILE" ]]; then
@@ -70,7 +75,7 @@ while true; do
   if [[ -d "$model_cache_dir/snapshots" ]]; then
     snap="$(ls -1dt "$model_cache_dir"/snapshots/* 2>/dev/null | head -n 1 || true)"
     if [[ -n "$snap" ]]; then
-      shard_count="$(ls -1 "$snap"/model-*-of-*.safetensors 2>/dev/null | wc -l || echo 0)"
+      shard_count="$(ls -1 "$snap"/model-[0-9][0-9][0-9][0-9][0-9]-of-${TOTAL_SHARDS_PADDED}.safetensors 2>/dev/null | wc -l || echo 0)"
     fi
   fi
 
@@ -83,7 +88,11 @@ while true; do
 
   last_line="$(get_last_progress_line)"
 
-  echo "[$now] state=$state port=$port_state cache=$cache_size model=$model_size shards=${shard_count}/${TOTAL_SHARDS} incomplete=$incomplete_human ${last_line:+| $last_line}"
+  echo "[$now] state=$state port=$port_state cache=$cache_size model=$model_size shards=${shard_count}/${TOTAL_SHARDS_COUNT} incomplete=$incomplete_human ${last_line:+| $last_line}"
+
+  if [[ "$EXIT_ON_PORT_UP" == "1" && "$port_state" == "up" ]]; then
+    exit 0
+  fi
 
   sleep "$INTERVAL_SECONDS"
 done

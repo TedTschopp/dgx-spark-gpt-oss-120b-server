@@ -22,6 +22,7 @@ make watch
 ## Example (model list)
 
 ```bash
+curl http://DGX_SPARK_IP:8355/health
 curl -s http://DGX_SPARK_IP:8355/v1/models | jq .
 ```
 

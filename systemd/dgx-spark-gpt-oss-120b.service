@@ -1,0 +1,25 @@
+[Unit]
+Description=DGX Spark gpt-oss-120b LAN API Server (TensorRT-LLM)
+Wants=network-online.target
+After=network-online.target docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/tedtschopp/Developer/dgx-spark-gpt-oss-120b-server
+
+# Ensure the HF cache mountpoint exists before Docker starts the container.
+# This uses the HF_CACHE_DIR path from .env by default (/opt/hf-cache), but we
+# create it unconditionally to avoid bind-mount surprises on boot.
+ExecStartPre=/usr/bin/mkdir -p /opt/hf-cache
+
+# Bring up the compose stack. The container has restart: unless-stopped, so it
+# will also survive Docker daemon restarts.
+ExecStart=/usr/bin/docker compose up -d
+ExecStop=/usr/bin/docker compose down
+
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
