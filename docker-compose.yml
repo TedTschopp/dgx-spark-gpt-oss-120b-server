@@ -7,6 +7,9 @@ services:
     network_mode: host
     environment:
     - HF_TOKEN=${HF_TOKEN}
+    # Work around occasional XetHub transfer 403s by forcing standard Hugging Face downloads.
+    - HF_HUB_DISABLE_XET=1
+    - HF_HUB_ENABLE_HF_TRANSFER=0
     - MODEL_HANDLE=${MODEL_HANDLE}
     - HOST=${HOST}
     - PORT=${PORT}

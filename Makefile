@@ -6,6 +6,7 @@ help:
 	@echo "  make up           Start the API server"
 	@echo "  make down         Stop the API server"
 	@echo "  make logs         Tail logs"
+	@echo "  make watch        Periodic one-line status updates"
 	@echo "  make health       Run a simple health check"
 	@echo "  make status       Show container status"
 
@@ -20,6 +21,9 @@ down:
 
 logs:
 	bash scripts/logs.sh
+
+watch:
+	bash scripts/watch_status.sh
 
 health:
 	bash scripts/healthcheck.sh

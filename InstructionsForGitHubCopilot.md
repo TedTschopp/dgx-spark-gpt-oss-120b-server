@@ -65,6 +65,8 @@ If this fails:
 - Fix Docker install first
 - Fix NVIDIA container runtime (nvidia-container-toolkit) so `docker run --gpus all ... nvidia-smi` works
 
+If you get Docker permission errors (cannot connect to `/var/run/docker.sock`), ensure your user can run Docker (e.g., add to the `docker` group, then re-login or run `newgrp docker`).
+
 ## 4) Pull the TensorRT-LLM image (optional but speeds first start)
 
 ```bash
@@ -84,10 +86,24 @@ Then watch logs:
 make logs
 ```
 
+Or watch a compact status line (recommended during long downloads):
+
+```bash
+make watch
+```
+
+Adjust the update interval (seconds):
+
+```bash
+INTERVAL_SECONDS=120 make watch
+```
+
 Notes:
 
 - First run may take a long time (many GB download/build/cache).
 - The server won’t respond until the model is loaded.
+
+If downloads error with `403 Forbidden` from `transfer.xethub.hf.co` (XetHub), this repo disables XetHub downloads inside the container so it falls back to standard Hugging Face downloads.
 
 ## 6) Check readiness (from the DGX host)
 
@@ -110,7 +126,7 @@ bash scripts/test_chat.sh
 ip addr | grep -E "inet "
 ```
 
-2) From your laptop/desktop on the same LAN, replace `DGX_IP`:
+1) From your laptop/desktop on the same LAN, replace `DGX_IP`:
 
 ```bash
 curl -s http://DGX_IP:8355/v1/models

@@ -38,3 +38,8 @@ Use a reverse proxy (Caddy/Nginx) to add:
 - IP allow-listing / rate limits
 
 This repo does not ship a proxy by default; add one only if you need authentication.
+
+## Operational notes
+
+- If you bind `HOST=0.0.0.0` for LAN access, remember that `0.0.0.0` is only valid for *binding*, not for *connecting*. From the DGX itself, use `http://127.0.0.1:PORT/...` for local checks.
+- During long first-run downloads, you can monitor progress from the DGX host without exposing any additional endpoints by running `make watch`.

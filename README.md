@@ -5,34 +5,45 @@ This repo runs `openai/gpt-oss-120b` as an API server on an NVIDIA DGX Spark, re
 ## Quick start
 
 1) Copy env file and set secrets:
+
 ```bash
 cp .env.example .env
 # edit .env and set HF_TOKEN
 ```
 
-2. (Optional) prereqs check:
+1) (Optional) prereqs check:
 
 ```bash
 make prereqs
 ```
 
-3. Start the server:
+If you see Docker permission errors (cannot connect to `/var/run/docker.sock`), add your user to the `docker` group and re-login (or run `newgrp docker`).
+
+1) Start the server:
 
 ```bash
 make up
 ```
 
-4. Tail logs:
+1) Tail logs:
 
 ```bash
 make logs
 ```
 
-5. Health check:
+Or watch a compact one-line status update (recommended during long downloads):
+
+```bash
+INTERVAL_SECONDS=120 make watch
+```
+
+1) Health check:
 
 ```bash
 make health
 ```
+
+Note: if you bind `HOST=0.0.0.0`, local health/smoke tests will still connect via `127.0.0.1` (because `curl http://0.0.0.0:PORT` is not a valid destination).
 
 ## Calling from another machine on your LAN
 
@@ -46,5 +57,6 @@ More examples: see `docs/API.md`.
 
 ## Notes
 
-* First run downloads many GB of weights into `HF_CACHE_DIR` (default `/opt/hf-cache`).
-* Keep `.env` out of git; use `.env.example` as a template.
+- First run downloads many GB of weights into `HF_CACHE_DIR` (default `/opt/hf-cache`).
+- Keep `.env` out of git; use `.env.example` as a template.
+- If downloads fail with `403 Forbidden` from `transfer.xethub.hf.co`, this repo disables XetHub downloads in the container and uses standard Hugging Face downloads instead.

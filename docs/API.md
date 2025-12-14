@@ -3,14 +3,24 @@
 This server runs inside `trtllm-serve`.
 
 ## Base URL
+
 `http://<DGX_SPARK_LAN_IP>:<PORT>`
 
 ## Discover endpoints
+
 Try:
+
 - `GET /v1/models`
 - `GET /health`
 
+If the server isn’t responding yet, it’s usually still downloading/loading the model. From the Spark host, you can monitor progress with:
+
+```bash
+make watch
+```
+
 ## Example (model list)
+
 ```bash
 curl -s http://DGX_SPARK_IP:8355/v1/models | jq .
 ```
