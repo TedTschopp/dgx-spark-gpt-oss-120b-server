@@ -60,6 +60,7 @@ services:
         # Start server
         trtllm-serve serve "$$MODEL_HANDLE" \
           --trust_remote_code \
+          --backend _autodeploy \
           --host "$$HOST" \
           --port "$$PORT" \
           --num_postprocess_workers 4 \
