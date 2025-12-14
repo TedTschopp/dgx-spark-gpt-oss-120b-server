@@ -2,7 +2,7 @@ services:
   trtllm:
     image: ${TRTLLM_IMAGE}
     container_name: trtllm_llm_server
-    runtime: nvidia
+    gpus: all
     ipc: host
     network_mode: host
     environment:

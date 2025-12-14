@@ -11,7 +11,13 @@ if [[ -f .env ]]; then
   set +a
 fi
 
-URL="http://${HOST:-0.0.0.0}:${PORT:-8355}"
+BIND_HOST="${HOST:-0.0.0.0}"
+CONNECT_HOST="$BIND_HOST"
+if [[ "$CONNECT_HOST" == "0.0.0.0" || "$CONNECT_HOST" == "::" ]]; then
+  CONNECT_HOST="127.0.0.1"
+fi
+
+URL="http://${CONNECT_HOST}:${PORT:-8355}"
 MODEL="${MODEL_HANDLE:-openai/gpt-oss-120b}"
 
 echo "Base URL: $URL"

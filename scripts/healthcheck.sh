@@ -7,7 +7,13 @@ cd "$ROOT"
 # shellcheck disable=SC1091
 if [[ -f .env ]]; then source .env; fi
 
-URL="http://${HOST:-0.0.0.0}:${PORT:-8355}"
+BIND_HOST="${HOST:-0.0.0.0}"
+CONNECT_HOST="$BIND_HOST"
+if [[ "$CONNECT_HOST" == "0.0.0.0" || "$CONNECT_HOST" == "::" ]]; then
+	CONNECT_HOST="127.0.0.1"
+fi
+
+URL="http://${CONNECT_HOST}:${PORT:-8355}"
 
 echo "Probing: $URL"
 # The server may expose different endpoints depending on version.
