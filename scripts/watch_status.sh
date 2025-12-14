@@ -13,6 +13,17 @@ TOTAL_SHARDS_SUFFIX="${TOTAL_SHARDS_SUFFIX:-14}"
 TOTAL_SHARDS_PADDED="$(printf '%05d' "$TOTAL_SHARDS_SUFFIX")"
 TOTAL_SHARDS_COUNT=$((TOTAL_SHARDS_SUFFIX + 1))
 
+docker_cmd() {
+  if docker info >/dev/null 2>&1; then
+    docker "$@"
+    return
+  fi
+
+  local cmd
+  cmd="$(printf '%q ' docker "$@")"
+  sg docker -c "$cmd"
+}
+
 # Load .env if present (do not fail if missing)
 if [[ -f "$ENV_FILE" ]]; then
   set -a
@@ -39,7 +50,7 @@ PY
 }
 
 get_last_progress_line() {
-  docker logs --tail 50 "$CONTAINER_NAME" 2>/dev/null | \
+  docker_cmd logs --tail 50 "$CONTAINER_NAME" 2>/dev/null | \
     grep -E 'Downloading |Download complete|Fetching [0-9]+ files' | \
     tail -n 1 | \
     tr -d '\r' || true
@@ -49,8 +60,8 @@ while true; do
   now="$(date '+%Y-%m-%d %H:%M:%S %Z')"
 
   state="unknown"
-  if docker inspect "$CONTAINER_NAME" >/dev/null 2>&1; then
-    state="$(docker inspect --format '{{.State.Status}}' "$CONTAINER_NAME" 2>/dev/null || echo unknown)"
+  if docker_cmd inspect "$CONTAINER_NAME" >/dev/null 2>&1; then
+    state="$(docker_cmd inspect --format '{{.State.Status}}' "$CONTAINER_NAME" 2>/dev/null || echo unknown)"
   else
     state="missing"
   fi

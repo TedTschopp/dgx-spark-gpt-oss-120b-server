@@ -4,7 +4,7 @@
 
 - Ensure Spark host firewall allows inbound TCP on `PORT` (default 8355).
 - Confirm you're binding to `0.0.0.0` (HOST env).
-- From another machine: `curl http://SPARK_IP:8355/v1/models`
+- From another machine: `curl http://<spark-host-or-ip>:8355/v1/models`
 
 Also note: `0.0.0.0` is only valid for *binding*, not for *connecting*. From the Spark host, connect to `http://127.0.0.1:PORT/...`.
 

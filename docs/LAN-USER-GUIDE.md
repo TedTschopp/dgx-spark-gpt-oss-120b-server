@@ -7,42 +7,34 @@ This DGX Spark hosts two things on the home network:
 
 ## URLs (what to bookmark)
 
-This DGX is advertising an mDNS hostname on the LAN:
+Use either:
 
-- `promaxgb10-5cd4.local`
+- your Spark’s mDNS hostname (often `<spark-hostname>.local`), or
+- your Spark’s LAN IPv4 address.
 
 If your client device can’t resolve or reach the `.local` name (some networks/devices prefer IPv4 and may not like IPv6-only mDNS results), use the DGX’s LAN IP address instead.
 
 - **Open WebUI (browser UI):**
-  - `http://promaxgb10-5cd4.local:3000`
+  - `http://<spark-host-or-ip>:3000`
 
 - **Model API health:**
-  - `http://promaxgb10-5cd4.local:8355/health`
+  - `http://<spark-host-or-ip>:8355/health`
 
 - **Model API (OpenAI-compatible base URL):**
-  - `http://promaxgb10-5cd4.local:8355/v1`
+  - `http://<spark-host-or-ip>:8355/v1`
 
 - **List available models:**
-  - `http://promaxgb10-5cd4.local:8355/v1/models`
-
-### Optional name-based URLs
-
-If your network supports mDNS, this host may also answer at:
-
-- `http://promaxgb10-5cd4.local:3000`
-- `http://promaxgb10-5cd4.local:8355/health`
-
-Note: on some networks this may resolve to IPv6 only; if that doesn’t work from your device, use the `DGX_IP` URLs.
+  - `http://<spark-host-or-ip>:8355/v1/models`
 
 ## Use Open WebUI (recommended)
 
-1) Open `http://promaxgb10-5cd4.local:3000` in a browser.
+1) Open `http://<spark-host-or-ip>:3000` in a browser.
 2) Create an account on first visit (local to this WebUI instance).
 3) The WebUI is pre-configured to talk to the DGX model API.
 
 If you need to configure it manually, use:
 
-- **OpenAI API Base URL:** `http://promaxgb10-5cd4.local:8355/v1`
+- **OpenAI API Base URL:** `http://<spark-host-or-ip>:8355/v1`
 - **API Key:** any non-empty string (example: `sk-local`)
 
 ## Use the API directly (curl)
@@ -50,19 +42,19 @@ If you need to configure it manually, use:
 ### Check health
 
 ```bash
-curl -i http://promaxgb10-5cd4.local:8355/health
+curl -i http://<spark-host-or-ip>:8355/health
 ```
 
 ### List models
 
 ```bash
-curl -s http://promaxgb10-5cd4.local:8355/v1/models
+curl -s http://<spark-host-or-ip>:8355/v1/models
 ```
 
 ### Chat completion
 
 ```bash
-curl http://promaxgb10-5cd4.local:8355/v1/chat/completions \
+curl http://<spark-host-or-ip>:8355/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "openai/gpt-oss-120b",
@@ -85,7 +77,7 @@ Example:
 from openai import OpenAI
 
 client = OpenAI(
-  base_url="http://promaxgb10-5cd4.local:8355/v1",
+  base_url="http://<spark-host-or-ip>:8355/v1",
     api_key="sk-local",
 )
 

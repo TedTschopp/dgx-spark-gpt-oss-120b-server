@@ -42,7 +42,7 @@ Edit `.env` and set at least:
 - `HF_CACHE_DIR=/opt/hf-cache` (or any large disk path)
 - `HOST=0.0.0.0`
 - `PORT=8355`
-- `TRTLLM_IMAGE=nvcr.io/nvidia/tensorrt-llm/release:spark-single-gpu-dev`
+- `TRTLLM_IMAGE=nvcr.io/nvidia/tensorrt-llm/release:1.2.0rc5`
 
 Create the cache directory (the scripts also do this, but it’s useful to verify permissions):
 
@@ -129,23 +129,28 @@ ip -br -4 addr
 ip route get 1.1.1.1 | sed -n '1p'
 ```
 
-1) From your laptop/desktop on the same LAN, replace `DGX_IP`:
+If your LAN supports mDNS, your Spark may be reachable at a `.local` hostname (often `$(hostname).local`).
+
+If your client device can’t resolve or reach the `.local` name, use the DGX’s LAN IP address instead.
+
+1) From your laptop/desktop on the same LAN:
 
 ```bash
-curl http://DGX_IP:8355/health
-curl -s http://DGX_IP:8355/v1/models
+curl http://<spark-host-or-ip>:8355/health
+curl -s http://<spark-host-or-ip>:8355/v1/models
 ```
 
 If `/v1/chat/completions` is available:
 
 ```bash
-curl http://DGX_IP:8355/v1/chat/completions \
+curl http://<spark-host-or-ip>:8355/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "openai/gpt-oss-120b",
     "messages": [{"role":"user","content":"Hello from LAN."}],
     "max_tokens": 64
   }'
+```
 
 ## 7b) Open WebUI (optional)
 
@@ -160,8 +165,7 @@ docker compose up -d open-webui
 Open it from another machine on your LAN:
 
 ```text
-http://DGX_IP:3000
-```
+http://<spark-host-or-ip>:3000
 ```
 
 ## 8) Stop / status
@@ -200,7 +204,7 @@ systemctl status dgx-spark-gpt-oss-120b.service
 - “API not reachable from LAN”:
   - Confirm `HOST=0.0.0.0`.
   - Confirm host firewall allows inbound `PORT`.
-  - Try `curl http://DGX_IP:PORT/v1/models` from another machine.
+  - Try `curl http://<spark-host-or-ip>:PORT/v1/models` from another machine.
 
 ## 11) Prompt Copilot with a simple operational checklist
 

@@ -47,11 +47,16 @@ Note: if you bind `HOST=0.0.0.0`, local health/smoke tests will still connect vi
 
 ## Calling from another machine on your LAN
 
-Find your Spark’s LAN IP (e.g. `192.168.1.50`) and call:
+Use either:
+
+- your Spark’s mDNS hostname (often `<spark-hostname>.local`), or
+- your Spark’s LAN IPv4 address.
+
+Then call:
 
 ```bash
-curl http://192.168.1.50:8355/health
-curl http://192.168.1.50:8355/v1/models
+curl http://<spark-host-or-ip>:8355/health
+curl http://<spark-host-or-ip>:8355/v1/models
 ```
 
 More examples: see `docs/API.md`.
@@ -71,7 +76,7 @@ docker compose up -d open-webui
 - Open in your browser:
 
 ```text
-http://<DGX_IP>:3000
+http://<spark-host-or-ip>:3000
 ```
 
 ## Start on boot (auto-start)
@@ -88,7 +93,9 @@ After that, you can reboot and verify:
 
 ```bash
 systemctl status dgx-spark-gpt-oss-120b.service
-curl http://<DGX_IP>:8355/health
+curl http://127.0.0.1:8355/health
+# or, from another machine on your LAN:
+# curl http://<spark-host-or-ip>:8355/health
 ```
 
 ## Notes

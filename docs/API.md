@@ -4,7 +4,7 @@ This server runs inside `trtllm-serve`.
 
 ## Base URL
 
-`http://<DGX_SPARK_LAN_IP>:<PORT>`
+`http://<spark-host-or-ip>:<port>`
 
 ## Discover endpoints
 
@@ -22,8 +22,8 @@ make watch
 ## Example (model list)
 
 ```bash
-curl http://DGX_SPARK_IP:8355/health
-curl -s http://DGX_SPARK_IP:8355/v1/models | jq .
+curl http://<spark-host-or-ip>:8355/health
+curl -s http://<spark-host-or-ip>:8355/v1/models | jq .
 ```
 
 ## Example (smoke test)
@@ -31,7 +31,7 @@ curl -s http://DGX_SPARK_IP:8355/v1/models | jq .
 If the server provides an OpenAI-compatible chat endpoint, you can try:
 
 ```bash
-curl http://DGX_SPARK_IP:8355/v1/chat/completions \
+curl http://<spark-host-or-ip>:8355/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "openai/gpt-oss-120b",
