@@ -146,6 +146,22 @@ curl http://DGX_IP:8355/v1/chat/completions \
     "messages": [{"role":"user","content":"Hello from LAN."}],
     "max_tokens": 64
   }'
+
+## 7b) Open WebUI (optional)
+
+Open WebUI provides a browser UI on the DGX that talks to the local OpenAI-compatible API.
+
+Start it:
+
+```bash
+docker compose up -d open-webui
+```
+
+Open it from another machine on your LAN:
+
+```text
+http://DGX_IP:3000
+```
 ```
 
 ## 8) Stop / status

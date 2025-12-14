@@ -56,6 +56,24 @@ curl http://192.168.1.50:8355/v1/models
 
 More examples: see `docs/API.md`.
 
+LAN setup / end-user docs: see `docs/LAN-USER-GUIDE.md`.
+
+## Open WebUI (optional UI)
+
+This repo can also run Open WebUI (a browser UI) alongside the API.
+
+- Start it (included in `make up`):
+
+```bash
+docker compose up -d open-webui
+```
+
+- Open in your browser:
+
+```text
+http://<DGX_IP>:3000
+```
+
 ## Start on boot (auto-start)
 
 The container uses `restart: unless-stopped`, so once the Docker Compose stack has been created, it will come back after a reboot when Docker starts.
