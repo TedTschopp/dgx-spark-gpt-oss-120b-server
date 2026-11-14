@@ -6,22 +6,22 @@ services:
     ipc: host
     network_mode: host
     environment:
-    - HF_TOKEN=${HF_TOKEN}
-    # Work around occasional XetHub transfer 403s by forcing standard Hugging Face downloads.
-    - HF_HUB_DISABLE_XET=1
-    - HF_HUB_ENABLE_HF_TRANSFER=0
-    - MODEL_HANDLE=${MODEL_HANDLE}
-    - HOST=${HOST}
-    - PORT=${PORT}
-    # Optional proxies if set in .env
-    - HTTPS_PROXY=${HTTPS_PROXY}
-    - HTTP_PROXY=${HTTP_PROXY}
-    - NO_PROXY=${NO_PROXY}
+      - HF_TOKEN=${HF_TOKEN}
+      # Work around occasional XetHub transfer 403s by forcing standard Hugging Face downloads.
+      - HF_HUB_DISABLE_XET=1
+      - HF_HUB_ENABLE_HF_TRANSFER=0
+      - MODEL_HANDLE=${MODEL_HANDLE}
+      - HOST=${HOST}
+      - PORT=${PORT}
+      # Optional proxies if set in .env
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - HTTP_PROXY=${HTTP_PROXY}
+      - NO_PROXY=${NO_PROXY}
     volumes:
-    # Persist HF downloads on the host for faster restarts
-    - ${HF_CACHE_DIR}:/root/.cache/huggingface
-    # Extra config mounted read-only
-    - ./config/extra-llm-api-config.yml:/etc/trtllm/extra-llm-api-config.yml:ro
+      # Persist HF downloads on the host for faster restarts
+      - ${HF_CACHE_DIR}:/root/.cache/huggingface
+      # Extra config mounted read-only
+      - ./config/extra-llm-api-config.yml:/etc/trtllm/extra-llm-api-config.yml:ro
     command: >
       bash -lc '
         set -euo pipefail
@@ -74,16 +74,16 @@ services:
     container_name: open_webui
     restart: unless-stopped
     ports:
-    - "3000:8080"
+      - "3000:8080"
     extra_hosts:
-    - "host.docker.internal:host-gateway"
+      - "host.docker.internal:host-gateway"
     environment:
-    # Pre-configure OpenAI-compatible endpoint (the TRT-LLM server on the host)
-    - OPENAI_API_BASE_URL=http://host.docker.internal:${PORT}/v1
-    # TRT-LLM server doesn't require auth by default; WebUI expects a non-empty key.
-    - OPENAI_API_KEY=sk-local
+      # Pre-configure OpenAI-compatible endpoint (the TRT-LLM server on the host)
+      - OPENAI_API_BASE_URL=http://host.docker.internal:${PORT}/v1
+      # TRT-LLM server doesn't require auth by default; WebUI expects a non-empty key.
+      - OPENAI_API_KEY=sk-local
     volumes:
-    - open-webui:/app/backend/data
+      - open-webui:/app/backend/data
 
 volumes:
   open-webui:
