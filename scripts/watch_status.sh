@@ -84,9 +84,17 @@ while true; do
   shard_count=0
   snap=""
   if [[ -d "$model_cache_dir/snapshots" ]]; then
-    snap="$(ls -1dt "$model_cache_dir"/snapshots/* 2>/dev/null | head -n 1 || true)"
+    for candidate in "$model_cache_dir"/snapshots/*; do
+      [[ -d "$candidate" ]] || continue
+      if [[ -z "$snap" || "$candidate" -nt "$snap" ]]; then
+        snap="$candidate"
+      fi
+    done
     if [[ -n "$snap" ]]; then
-      shard_count="$(ls -1 "$snap"/model-[0-9][0-9][0-9][0-9][0-9]-of-${TOTAL_SHARDS_PADDED}.safetensors 2>/dev/null | wc -l || echo 0)"
+      for shard in "$snap"/model-[0-9][0-9][0-9][0-9][0-9]-of-"${TOTAL_SHARDS_PADDED}".safetensors; do
+        [[ -f "$shard" ]] || continue
+        shard_count=$((shard_count + 1))
+      done
     fi
   fi
 
